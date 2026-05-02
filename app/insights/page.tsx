@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ChevronDown,
@@ -7,7 +10,12 @@ import {
   UserCircle,
   Waves,
 } from "lucide-react";
-import { getWaterAnalysis } from "@/lib/WaterService";
+import {
+  analyzeWaterPoint,
+  getWaterData,
+  WaterAnalysis,
+  WaterData,
+} from "@/lib/WaterService";
 
 function getIndicatorStatus(value: number) {
   if (value >= 120) return "Very High";
@@ -33,8 +41,52 @@ function getStatusStyle(status: string) {
   return "bg-red-100 text-red-700";
 }
 
-export default async function InsightsPage() {
-  const analysis = await getWaterAnalysis();
+export default function InsightsPage() {
+  const [waterData, setWaterData] = useState<WaterData[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const [analysis, setAnalysis] = useState<WaterAnalysis | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadWaterData() {
+      const data = await getWaterData();
+
+      setWaterData(data);
+
+      if (data.length > 0) {
+        const latestIndex = data.length - 1;
+
+        setSelectedIndex(latestIndex);
+        setAnalysis(analyzeWaterPoint(data[latestIndex]));
+      }
+
+      setLoading(false);
+    }
+
+    loadWaterData();
+  }, []);
+
+  const handleDataPointChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const index = Number(event.target.value);
+    const selectedDataPoint = waterData[index];
+
+    setSelectedIndex(index);
+    setAnalysis(analyzeWaterPoint(selectedDataPoint));
+  };
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-[#faf8f2] text-slate-900">
+        <section className="mx-auto max-w-7xl px-5 py-20 text-center lg:px-8">
+          <h1 className="text-4xl font-black tracking-tight text-slate-950">
+            Loading Water Insights...
+          </h1>
+        </section>
+      </main>
+    );
+  }
 
   if (!analysis) {
     return (
@@ -100,7 +152,7 @@ export default async function InsightsPage() {
           </Link>
 
           <div className="hidden items-center gap-10 font-semibold text-slate-600 md:flex">
-            <Link href="/dashboard" className="hover:text-sky-700">
+            <Link href="/Dashboard" className="hover:text-sky-700">
               Dashboard
             </Link>
 
@@ -121,10 +173,24 @@ export default async function InsightsPage() {
           </div>
 
           <div className="flex items-center gap-4">
-            <button className="hidden items-center gap-3 rounded-xl border border-slate-300 bg-white px-4 py-3 font-semibold text-slate-600 shadow-sm sm:flex">
-              California
-              <ChevronDown size={18} />
-            </button>
+            <div className="relative hidden sm:block">
+              <select
+                value={selectedIndex}
+                onChange={handleDataPointChange}
+                className="appearance-none rounded-xl border border-slate-300 bg-white px-4 py-3 pr-10 font-semibold text-slate-600 shadow-sm outline-none focus:border-sky-600"
+              >
+                {waterData.map((item, index) => (
+                  <option key={`${item.date}-${index}`} value={index}>
+                    {item.date}
+                  </option>
+                ))}
+              </select>
+
+              <ChevronDown
+                size={18}
+                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
+              />
+            </div>
 
             <button className="rounded-full bg-slate-900 p-2 text-white">
               <UserCircle size={28} />
@@ -134,14 +200,46 @@ export default async function InsightsPage() {
       </header>
 
       <section className="mx-auto max-w-7xl px-5 py-10 lg:px-8">
-        <h1 className="text-4xl font-black tracking-tight text-slate-950">
-          Water Insights
-        </h1>
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h1 className="text-4xl font-black tracking-tight text-slate-950">
+              Water Insights
+            </h1>
 
-        <p className="mt-3 max-w-3xl text-lg font-medium leading-8 text-slate-600">
-          These key indicators help explain whether water conditions are safe,
-          trending toward concern, or at risk.
-        </p>
+            <p className="mt-3 max-w-3xl text-lg font-medium leading-8 text-slate-600">
+              These key indicators help explain whether water conditions are
+              safe, trending toward concern, or at risk.
+            </p>
+          </div>
+
+          <div className="sm:hidden">
+            <label className="mb-2 block text-sm font-black uppercase tracking-[0.2em] text-slate-500">
+              Data Point
+            </label>
+
+            <select
+              value={selectedIndex}
+              onChange={handleDataPointChange}
+              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 font-semibold text-slate-600 shadow-sm outline-none focus:border-sky-600"
+            >
+              {waterData.map((item, index) => (
+                <option key={`${item.date}-${index}`} value={index}>
+                  {item.date}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <p className="text-sm font-black uppercase tracking-[0.2em] text-slate-500">
+            Viewing Data Point
+          </p>
+
+          <p className="mt-2 text-2xl font-black text-sky-700">
+            {analysis.latest.date}
+          </p>
+        </div>
 
         <div className="mt-8 grid gap-6 md:grid-cols-3">
           {insights.map((item) => {
@@ -187,11 +285,12 @@ export default async function InsightsPage() {
             {analysis.explanation}
           </p>
 
-          <div className="mt-6 grid gap-4 md:grid-cols-3">
+          <div className="mt-6 grid gap-4 md:grid-cols-4">
             <div className="rounded-xl bg-slate-100 p-5">
               <p className="text-sm font-black uppercase tracking-[0.2em] text-slate-500">
                 Water Score
               </p>
+
               <p className="mt-2 text-3xl font-black text-sky-700">
                 {analysis.waterScore}
               </p>
@@ -199,8 +298,19 @@ export default async function InsightsPage() {
 
             <div className="rounded-xl bg-slate-100 p-5">
               <p className="text-sm font-black uppercase tracking-[0.2em] text-slate-500">
+                Status
+              </p>
+
+              <p className="mt-2 text-3xl font-black text-sky-700">
+                {analysis.waterStatus}
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-slate-100 p-5">
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-slate-500">
                 Drought Risk
               </p>
+
               <p className="mt-2 text-3xl font-black text-sky-700">
                 {analysis.droughtRisk}
               </p>
@@ -210,6 +320,7 @@ export default async function InsightsPage() {
               <p className="text-sm font-black uppercase tracking-[0.2em] text-slate-500">
                 Flood Risk
               </p>
+
               <p className="mt-2 text-3xl font-black text-sky-700">
                 {analysis.floodRisk}
               </p>

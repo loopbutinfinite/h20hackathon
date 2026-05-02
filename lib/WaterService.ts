@@ -233,3 +233,16 @@ export async function getWaterAnalysis(): Promise<WaterAnalysis | null> {
 
   return analyzeWaterData(data);
 }
+export function analyzeWaterPoint(data: WaterData): WaterAnalysis {
+  const waterScore = getWaterScore(data);
+
+  return {
+    latest: data,
+    waterScore,
+    waterStatus: getWaterStatus(waterScore),
+    droughtRisk: getDroughtRisk(data),
+    floodRisk: getFloodRisk(data),
+    recommendation: getWaterRecommendation(data),
+    explanation: getExplanation(data),
+  };
+}
