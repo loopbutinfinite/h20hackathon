@@ -1,10 +1,10 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
   ChevronDown,
   CloudRain,
   Droplets,
-  Landmark,
   Leaf,
   Mountain,
   Snowflake,
@@ -26,7 +26,7 @@ export default function HomePage() {
     {
       title: "Forecast",
       description:
-        "See the 7-day outlook for precipitation, streamflow, and storage.",
+        "See how snowpack, precipitation, and reservoirs affect future water supply.",
       icon: CloudRain,
       bg: "bg-teal-100",
       iconColor: "text-sky-800",
@@ -34,7 +34,7 @@ export default function HomePage() {
     {
       title: "Year Comparison",
       description:
-        "Compare conditions to last year and historical averages.",
+        "Compare current conditions to past years and historical patterns.",
       icon: Mountain,
       bg: "bg-green-100",
       iconColor: "text-slate-700",
@@ -51,7 +51,6 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen bg-[#faf8f2] text-slate-900">
-      {/* Navbar */}
       <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 backdrop-blur">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
           <Link href="/" className="flex items-center gap-3">
@@ -65,13 +64,13 @@ export default function HomePage() {
           </Link>
 
           <div className="hidden items-center gap-10 font-semibold text-slate-600 md:flex">
-            <Link href="/Dashboard" className="border-b-2 border-sky-600 pb-2 text-slate-900">
+            <Link href="/dashboard" className="hover:text-sky-700">
               Dashboard
             </Link>
             <Link href="/insights" className="hover:text-sky-700">
               Insights
             </Link>
-            <Link href="/Recommendations" className="hover:text-sky-700">
+            <Link href="/recommendations" className="hover:text-sky-700">
               Recommendations
             </Link>
             <Link href="/about" className="hover:text-sky-700">
@@ -81,7 +80,7 @@ export default function HomePage() {
 
           <div className="flex items-center gap-4">
             <button className="hidden items-center gap-3 rounded-xl border border-slate-300 bg-white px-4 py-3 font-semibold text-slate-600 shadow-sm sm:flex">
-              Boulder, CO
+              California
               <ChevronDown size={18} />
             </button>
 
@@ -92,9 +91,8 @@ export default function HomePage() {
         </nav>
       </header>
 
-      {/* Hero */}
       <section className="relative overflow-hidden border-b border-slate-200">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(250,248,242,0.96),rgba(250,248,242,0.78),rgba(250,248,242,0.95)),url('/assets/water-watch-hero.jpg')] bg-cover bg-center" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#faf8f2] via-[#eef7f8] to-[#faf8f2]" />
 
         <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 py-20 lg:grid-cols-2 lg:px-8 lg:py-28">
           <div>
@@ -103,20 +101,20 @@ export default function HomePage() {
             </h1>
 
             <p className="mt-6 max-w-xl text-xl font-medium leading-8 text-slate-700">
-              Real-time data and local insights to help our community make
-              smarter water decisions.
+              Water Watch turns snowpack, precipitation, and reservoir data into
+              a simple score, clear insights, and practical conservation tips.
             </p>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Link
-                href="/insights"
+                href="/dashboard"
                 className="rounded-xl bg-sky-800 px-7 py-4 text-center font-bold text-white shadow-lg transition hover:bg-sky-900"
               >
-                View Insights
+                View Dashboard
               </Link>
 
               <Link
-                href="/Recommendations"
+                href="/recommendations"
                 className="rounded-xl border-2 border-slate-400 bg-white/70 px-7 py-4 text-center font-bold text-slate-700 transition hover:border-sky-700 hover:text-sky-800"
               >
                 See Recommendations
@@ -124,16 +122,15 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Dashboard Preview using second image style */}
           <Link
-            href="/Dashboard"
-            className="group block rounded-2xl bg-white p-4 shadow-2xl ring-1 ring-slate-200 transition hover:-translate-y-1 hover:shadow-3xl"
+            href="/dashboard"
+            className="group block rounded-2xl bg-white p-4 shadow-2xl ring-1 ring-slate-200 transition hover:-translate-y-1"
           >
             <div className="rounded-2xl bg-slate-50 p-5">
               <div className="mb-5 flex items-center justify-between">
                 <div className="flex items-center gap-2 text-lg font-black text-blue-950">
                   <Droplets className="text-blue-800" size={24} />
-                  HydroFlow
+                  Water Watch
                 </div>
 
                 <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-bold text-green-700">
@@ -146,8 +143,8 @@ export default function HomePage() {
                 <p className="text-4xl font-black tracking-[0.2em]">SAFE</p>
                 <p className="mt-2 text-xl font-bold">Current Water Status</p>
                 <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-emerald-50">
-                  Reservoir levels are optimal. No immediate agricultural or
-                  residential restrictions in effect.
+                  Reservoir levels are strong and current water conditions are
+                  favorable.
                 </p>
               </div>
 
@@ -184,7 +181,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Key Highlights */}
       <section className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
         <h2 className="text-center text-3xl font-black text-slate-950">
           Key Highlights
@@ -235,7 +231,7 @@ function MiniStatCard({
   value,
   label,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   value: string;
   label: string;

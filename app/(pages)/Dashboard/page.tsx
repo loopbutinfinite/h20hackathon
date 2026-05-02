@@ -11,21 +11,21 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-export default function StatsDashboardPage() {
+export default function DashboardPage() {
   const supplyCards = [
     {
       title: "Snowpack",
       value: "110%",
       label: "Above Average",
       icon: Snowflake,
-      ring: "border-sky-700",
+      progress: "",
     },
     {
       title: "Reservoirs",
       value: "85%",
       label: "Capacity Reached",
       icon: Waves,
-      ring: "border-sky-700",
+      progress: "",
     },
     {
       title: "Recent Rainfall",
@@ -38,40 +38,54 @@ export default function StatsDashboardPage() {
 
   const alerts = [
     {
-      region: "North Valley",
-      allocation: "100%",
-      status: "Clear",
-      type: "clear",
-    },
-    {
-      region: "South Basin",
-      allocation: "100%",
-      status: "Clear",
-      type: "clear",
-    },
-    {
-      region: "Eastern Highlands",
-      allocation: "85%",
+      region: "Outdoor Watering",
+      allocation: "Reduce irrigation during hot afternoons.",
       status: "Watch",
       type: "watch",
     },
     {
-      region: "Western Plains",
-      allocation: "100%",
+      region: "Leak Prevention",
+      allocation: "Check faucets, toilets, and sprinklers.",
       status: "Clear",
       type: "clear",
+    },
+    {
+      region: "Reservoir Monitoring",
+      allocation: "Storage is strong but should still be monitored.",
+      status: "Clear",
+      type: "clear",
+    },
+    {
+      region: "Summer Readiness",
+      allocation: "Prepare for warmer, drier months.",
+      status: "Watch",
+      type: "watch",
     },
   ];
 
   return (
     <main className="min-h-screen bg-slate-50 text-blue-950">
-      {/* Top Bar */}
       <header className="border-b border-slate-200 bg-white">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5 lg:px-8">
           <Link href="/" className="flex items-center gap-2 text-xl font-black">
             <Droplets className="text-blue-800" />
-            HydroFlow
+            Water Watch
           </Link>
+
+          <div className="hidden items-center gap-8 font-semibold text-slate-600 md:flex">
+            <Link href="/dashboard" className="text-sky-700">
+              Dashboard
+            </Link>
+            <Link href="/insights" className="hover:text-sky-700">
+              Insights
+            </Link>
+            <Link href="/recommendations" className="hover:text-sky-700">
+              Recommendations
+            </Link>
+            <Link href="/about" className="hover:text-sky-700">
+              About
+            </Link>
+          </div>
 
           <div className="flex items-center gap-6 text-blue-900">
             <Bell size={22} />
@@ -82,7 +96,6 @@ export default function StatsDashboardPage() {
       </header>
 
       <div className="mx-auto max-w-7xl px-5 py-8 lg:px-8">
-        {/* Status Banner */}
         <section className="rounded-2xl bg-emerald-600 px-6 py-10 text-center text-white shadow-xl md:py-12">
           <CheckCircle className="mx-auto mb-5" size={72} strokeWidth={2.5} />
 
@@ -91,12 +104,11 @@ export default function StatsDashboardPage() {
           <p className="mt-4 text-2xl font-bold">Current Water Status</p>
 
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-emerald-50">
-            Reservoir levels are optimal. No immediate agricultural or
-            residential restrictions in effect.
+            Reservoir levels are strong and current water conditions are
+            favorable. Conservation is still encouraged to protect future supply.
           </p>
         </section>
 
-        {/* Supply Cards */}
         <section className="mt-10">
           <h2 className="text-3xl font-black">Water Supply at a Glance</h2>
 
@@ -138,16 +150,15 @@ export default function StatsDashboardPage() {
           </div>
         </section>
 
-        {/* Regional Alerts */}
         <section className="mt-10">
           <div className="flex items-end justify-between border-b border-slate-300 pb-3">
-            <h2 className="text-3xl font-black">Farmer&apos;s Regional Alerts</h2>
+            <h2 className="text-3xl font-black">Water Action Alerts</h2>
 
             <Link
-              href="/stats/regions"
+              href="/recommendations"
               className="hidden text-sm font-black uppercase tracking-[0.25em] text-sky-700 hover:text-sky-900 sm:block"
             >
-              View All Regions
+              View Recommendations
             </Link>
           </div>
 
@@ -159,15 +170,15 @@ export default function StatsDashboardPage() {
                 <article
                   key={alert.region}
                   className={`rounded-2xl bg-slate-200 p-6 shadow-sm ${
-                    isWatch ? "border-l-4 border-amber-500" : "border-l-4 border-emerald-500"
+                    isWatch
+                      ? "border-l-4 border-amber-500"
+                      : "border-l-4 border-emerald-500"
                   }`}
                 >
                   <div className="flex items-center justify-between gap-4">
                     <div>
                       <h3 className="text-2xl font-black">{alert.region}</h3>
-                      <p className="mt-2 text-slate-600">
-                        Allocation: {alert.allocation}
-                      </p>
+                      <p className="mt-2 text-slate-600">{alert.allocation}</p>
                     </div>
 
                     <span
