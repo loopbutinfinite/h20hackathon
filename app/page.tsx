@@ -171,7 +171,7 @@ export default async function HomePage() {
 
               <div
                 className={`rounded-2xl px-6 py-8 text-center text-white shadow-lg ${getPreviewColor(
-                  previewStatus
+                  previewStatus,
                 )}`}
               >
                 <PreviewIcon
@@ -257,7 +257,11 @@ export default async function HomePage() {
                 </p>
 
                 <Link
-                  href="/Insights"
+                  href={
+                    item.title === "Action Tips"
+                      ? "/Recommendations"
+                      : "/Insights"
+                  }
                   className="mt-6 inline-flex items-center gap-2 font-bold text-sky-700 hover:text-sky-900"
                 >
                   Learn more
