@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Water Watch",
+  title: "Water Wise",
   description: "Water supply dashboard for snowpack, precipitation, and reservoir data.",
   icons: {
     icon: "/favicon.png",

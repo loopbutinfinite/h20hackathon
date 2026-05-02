@@ -99,28 +99,26 @@ export default async function HomePage() {
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
           <Link href="/" className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-full bg-sky-100 text-sky-800">
-              <Mountain size={26} />
+              <Droplets size={26} />
             </div>
 
             <span className="text-xl font-black tracking-wide text-slate-900">
-              WATER WATCH
+              WATER WISE
             </span>
           </Link>
 
           <div className="hidden items-center gap-10 font-semibold text-slate-600 md:flex">
-            <Link href="/insights" className="hover:text-sky-700">
+            <Link href="/" className="hover:text-sky-700">
+              Home
+            </Link>
+            <Link href="/Insights" className="hover:text-sky-700">
               Insights
             </Link>
 
-            <Link href="/recommendations" className="hover:text-sky-700">
+            <Link href="/Recommendations" className="hover:text-sky-700">
               Recommendations
             </Link>
-
-            <Link href="/about" className="hover:text-sky-700">
-              About
-            </Link>
           </div>
-
         </nav>
       </header>
 
@@ -134,20 +132,20 @@ export default async function HomePage() {
             </h1>
 
             <p className="mt-6 max-w-xl text-xl font-medium leading-8 text-slate-700">
-              Water Watch turns snowpack, precipitation, and reservoir data into
+              Water Wise turns snowpack, precipitation, and reservoir data into
               a simple score, clear insights, and practical conservation tips.
             </p>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Link
-                href="/insights"
+                href="/Insights"
                 className="rounded-xl bg-sky-800 px-7 py-4 text-center font-bold text-white shadow-lg transition hover:bg-sky-900"
               >
                 View Insights
               </Link>
 
               <Link
-                href="/recommendations"
+                href="/Recommendations"
                 className="rounded-xl border-2 border-slate-400 bg-white/70 px-7 py-4 text-center font-bold text-slate-700 transition hover:border-sky-700 hover:text-sky-800"
               >
                 See Recommendations
@@ -156,7 +154,7 @@ export default async function HomePage() {
           </div>
 
           <Link
-            href="/insights"
+            href="/Insights"
             className="group block rounded-2xl bg-white p-4 shadow-2xl ring-1 ring-slate-200 transition hover:-translate-y-1"
           >
             <div className="rounded-2xl bg-slate-50 p-5">
@@ -259,7 +257,7 @@ export default async function HomePage() {
                 </p>
 
                 <Link
-                  href="/insights"
+                  href="/Insights"
                   className="mt-6 inline-flex items-center gap-2 font-bold text-sky-700 hover:text-sky-900"
                 >
                   Learn more
