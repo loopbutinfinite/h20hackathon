@@ -1,65 +1,254 @@
-import Image from "next/image";
+import Link from "next/link";
+import {
+  ArrowRight,
+  ChevronDown,
+  CloudRain,
+  Droplets,
+  Landmark,
+  Leaf,
+  Mountain,
+  Snowflake,
+  UserCircle,
+  Waves,
+  CheckCircle,
+} from "lucide-react";
 
-export default function Home() {
+export default function HomePage() {
+  const highlights = [
+    {
+      title: "Water Score",
+      description:
+        "A simple score that reflects overall water conditions in your area.",
+      icon: Droplets,
+      bg: "bg-sky-100",
+      iconColor: "text-sky-800",
+    },
+    {
+      title: "Forecast",
+      description:
+        "See the 7-day outlook for precipitation, streamflow, and storage.",
+      icon: CloudRain,
+      bg: "bg-teal-100",
+      iconColor: "text-sky-800",
+    },
+    {
+      title: "Year Comparison",
+      description:
+        "Compare conditions to last year and historical averages.",
+      icon: Mountain,
+      bg: "bg-green-100",
+      iconColor: "text-slate-700",
+    },
+    {
+      title: "Action Tips",
+      description:
+        "Practical steps you can take to conserve and protect our water.",
+      icon: Leaf,
+      bg: "bg-orange-100",
+      iconColor: "text-amber-700",
+    },
+  ];
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className="min-h-screen bg-[#faf8f2] text-slate-900">
+      {/* Navbar */}
+      <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 backdrop-blur">
+        <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
+          <Link href="/" className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-sky-100 text-sky-800">
+              <Mountain size={26} />
+            </div>
+
+            <span className="text-xl font-black tracking-wide text-slate-900">
+              WATER WATCH
+            </span>
+          </Link>
+
+          <div className="hidden items-center gap-10 font-semibold text-slate-600 md:flex">
+            <Link href="/Dashboard" className="border-b-2 border-sky-600 pb-2 text-slate-900">
+              Dashboard
+            </Link>
+            <Link href="/insights" className="hover:text-sky-700">
+              Insights
+            </Link>
+            <Link href="/Recommendations" className="hover:text-sky-700">
+              Recommendations
+            </Link>
+            <Link href="/about" className="hover:text-sky-700">
+              About
+            </Link>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <button className="hidden items-center gap-3 rounded-xl border border-slate-300 bg-white px-4 py-3 font-semibold text-slate-600 shadow-sm sm:flex">
+              Boulder, CO
+              <ChevronDown size={18} />
+            </button>
+
+            <button className="rounded-full bg-slate-900 p-2 text-white">
+              <UserCircle size={28} />
+            </button>
+          </div>
+        </nav>
+      </header>
+
+      {/* Hero */}
+      <section className="relative overflow-hidden border-b border-slate-200">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(250,248,242,0.96),rgba(250,248,242,0.78),rgba(250,248,242,0.95)),url('/assets/water-watch-hero.jpg')] bg-cover bg-center" />
+
+        <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 py-20 lg:grid-cols-2 lg:px-8 lg:py-28">
+          <div>
+            <h1 className="max-w-xl text-5xl font-black leading-tight tracking-tight text-slate-950 md:text-6xl">
+              Understand your water conditions.
+            </h1>
+
+            <p className="mt-6 max-w-xl text-xl font-medium leading-8 text-slate-700">
+              Real-time data and local insights to help our community make
+              smarter water decisions.
+            </p>
+
+            <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+              <Link
+                href="/insights"
+                className="rounded-xl bg-sky-800 px-7 py-4 text-center font-bold text-white shadow-lg transition hover:bg-sky-900"
+              >
+                View Insights
+              </Link>
+
+              <Link
+                href="/Recommendations"
+                className="rounded-xl border-2 border-slate-400 bg-white/70 px-7 py-4 text-center font-bold text-slate-700 transition hover:border-sky-700 hover:text-sky-800"
+              >
+                See Recommendations
+              </Link>
+            </div>
+          </div>
+
+          {/* Dashboard Preview using second image style */}
+          <Link
+            href="/Dashboard"
+            className="group block rounded-2xl bg-white p-4 shadow-2xl ring-1 ring-slate-200 transition hover:-translate-y-1 hover:shadow-3xl"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <div className="rounded-2xl bg-slate-50 p-5">
+              <div className="mb-5 flex items-center justify-between">
+                <div className="flex items-center gap-2 text-lg font-black text-blue-950">
+                  <Droplets className="text-blue-800" size={24} />
+                  HydroFlow
+                </div>
+
+                <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-bold text-green-700">
+                  Live Preview
+                </span>
+              </div>
+
+              <div className="rounded-2xl bg-emerald-600 px-6 py-8 text-center text-white shadow-lg">
+                <CheckCircle className="mx-auto mb-4" size={56} strokeWidth={2.5} />
+                <p className="text-4xl font-black tracking-[0.2em]">SAFE</p>
+                <p className="mt-2 text-xl font-bold">Current Water Status</p>
+                <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-emerald-50">
+                  Reservoir levels are optimal. No immediate agricultural or
+                  residential restrictions in effect.
+                </p>
+              </div>
+
+              <div className="mt-5 grid gap-4 sm:grid-cols-3">
+                <MiniStatCard
+                  icon={<Snowflake size={28} />}
+                  title="Snowpack"
+                  value="110%"
+                  label="Above Average"
+                />
+                <MiniStatCard
+                  icon={<Waves size={28} />}
+                  title="Reservoirs"
+                  value="85%"
+                  label="Capacity Reached"
+                />
+                <MiniStatCard
+                  icon={<CloudRain size={28} />}
+                  title="Rainfall"
+                  value='4.2"'
+                  label="Past 30 Days"
+                />
+              </div>
+
+              <div className="mt-5 flex items-center justify-center gap-2 font-bold text-sky-800">
+                View full dashboard
+                <ArrowRight
+                  size={18}
+                  className="transition group-hover:translate-x-1"
+                />
+              </div>
+            </div>
+          </Link>
         </div>
-      </main>
+      </section>
+
+      {/* Key Highlights */}
+      <section className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
+        <h2 className="text-center text-3xl font-black text-slate-950">
+          Key Highlights
+        </h2>
+
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {highlights.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <article
+                key={item.title}
+                className="rounded-2xl border border-slate-200 bg-white/80 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+              >
+                <div
+                  className={`mb-5 flex h-16 w-16 items-center justify-center rounded-full ${item.bg} ${item.iconColor}`}
+                >
+                  <Icon size={34} />
+                </div>
+
+                <h3 className="text-xl font-black text-slate-900">
+                  {item.title}
+                </h3>
+
+                <p className="mt-4 leading-7 text-slate-600">
+                  {item.description}
+                </p>
+
+                <Link
+                  href="/insights"
+                  className="mt-6 inline-flex items-center gap-2 font-bold text-sky-700 hover:text-sky-900"
+                >
+                  Learn more
+                  <ArrowRight size={18} />
+                </Link>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function MiniStatCard({
+  icon,
+  title,
+  value,
+  label,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  value: string;
+  label: string;
+}) {
+  return (
+    <div className="rounded-xl bg-white p-4 text-center shadow-sm ring-1 ring-slate-200">
+      <div className="mx-auto mb-2 flex justify-center text-sky-700">
+        {icon}
+      </div>
+
+      <p className="font-black text-slate-900">{title}</p>
+      <p className="mt-2 text-2xl font-black text-sky-700">{value}</p>
+      <p className="mt-1 text-xs font-medium text-slate-500">{label}</p>
     </div>
   );
 }
