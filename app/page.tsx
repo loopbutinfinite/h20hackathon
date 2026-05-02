@@ -15,6 +15,30 @@ import {
 } from "lucide-react";
 import { getWaterAnalysis } from "@/lib/WaterService";
 
+function getWaterScoreColor(score: number) {
+  if (score >= 90) {
+    return "text-emerald-600";
+  }
+
+  if (score >= 75) {
+    return "text-amber-500";
+  }
+
+  return "text-red-600";
+}
+
+function getWaterScoreLabel(score: number) {
+  if (score >= 90) {
+    return "Healthy";
+  }
+
+  if (score >= 75) {
+    return "Caution";
+  }
+
+  return "Drought Risk";
+}
+
 function getPreviewColor(status: string) {
   if (status === "Very Healthy" || status === "Healthy") {
     return "bg-emerald-600";
@@ -57,8 +81,12 @@ export default async function HomePage() {
   const highlights = [
     {
       title: "Water Score",
+      score: analysis?.waterScore ?? null,
+      status: analysis
+        ? getWaterScoreLabel(analysis.waterScore)
+        : "Unavailable",
       description: analysis
-        ? `The current water score is ${analysis.waterScore}, which means conditions are ${analysis.waterStatus.toLowerCase()}.`
+        ? "Current overall water condition."
         : "A simple score that reflects overall water conditions in your area.",
       icon: Droplets,
       bg: "bg-sky-100",
@@ -252,9 +280,31 @@ export default async function HomePage() {
                   {item.title}
                 </h3>
 
-                <p className="mt-4 leading-7 text-slate-600">
-                  {item.description}
-                </p>
+                {item.title === "Water Score" && item.score !== null ? (
+                  <>
+                    <p
+                      className={`mt-4 text-5xl font-black ${getWaterScoreColor(
+                        item.score,
+                      )}`}
+                    >
+                      {item.score}
+                    </p>
+
+                    <p
+                      className={`mt-2 text-lg font-bold ${getWaterScoreColor(item.score)}`}
+                    >
+                      {item.status}
+                    </p>
+
+                    <p className="mt-3 leading-7 text-slate-600">
+                      {item.description}
+                    </p>
+                  </>
+                ) : (
+                  <p className="mt-4 leading-7 text-slate-600">
+                    {item.description}
+                  </p>
+                )}
 
                 <Link
                   href={
@@ -299,3 +349,4 @@ function MiniStatCard({
     </div>
   );
 }
+
