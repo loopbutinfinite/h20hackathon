@@ -153,7 +153,7 @@ export default function RecommendationsPage() {
             </div>
 
             <span className="text-xl font-black tracking-wide text-slate-900">
-              Hydro Flow
+              Water Wise
             </span>
           </Link>
 
@@ -162,12 +162,12 @@ export default function RecommendationsPage() {
               Home
             </Link>
 
-            <Link href="/insights" className="hover:text-sky-700">
+            <Link href="/Insights" className="hover:text-sky-700">
               Insights
             </Link>
 
             <Link
-              href="/recommendations"
+              href="/Recommendations"
               className="border-b-2 border-sky-600 pb-2 text-slate-900"
             >
               Recommendations
@@ -338,7 +338,7 @@ export default function RecommendationsPage() {
           </div>
 
           <Link
-            href="/insights"
+            href="/Insights"
             className="rounded-xl border-2 border-orange-300 bg-white/60 px-8 py-4 text-center font-black text-amber-800 transition hover:border-amber-700 hover:bg-white"
           >
             Check Water Insights
