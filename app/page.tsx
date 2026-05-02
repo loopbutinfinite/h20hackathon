@@ -11,38 +11,83 @@ import {
   UserCircle,
   Waves,
   CheckCircle,
+  AlertTriangle,
 } from "lucide-react";
+import { getWaterAnalysis } from "@/lib/WaterService";
 
-export default function HomePage() {
+function getPreviewColor(status: string) {
+  if (status === "Very Healthy" || status === "Healthy") {
+    return "bg-emerald-600";
+  }
+
+  if (status === "Watch") {
+    return "bg-amber-500";
+  }
+
+  if (status === "Drought Risk") {
+    return "bg-orange-600";
+  }
+
+  return "bg-red-700";
+}
+
+function getPreviewIcon(status: string) {
+  if (status === "Very Healthy" || status === "Healthy") {
+    return CheckCircle;
+  }
+
+  return AlertTriangle;
+}
+
+export default async function HomePage() {
+  const analysis = await getWaterAnalysis();
+
+  const previewStatus = analysis?.waterStatus ?? "Unavailable";
+  const previewScore = analysis?.waterScore ?? "--";
+  const previewText =
+    analysis?.explanation ??
+    "Water data could not be loaded right now. Please try again later.";
+
+  const snowpack = analysis ? `${analysis.latest.snowpack}%` : "--";
+  const reservoirs = analysis ? `${analysis.latest.reservoir}%` : "--";
+  const precipitation = analysis ? `${analysis.latest.precip}%` : "--";
+
+  const PreviewIcon = getPreviewIcon(previewStatus);
+
   const highlights = [
     {
       title: "Water Score",
       description:
-        "A simple score that reflects overall water conditions in your area.",
+        analysis
+          ? `The current water score is ${analysis.waterScore}, which means conditions are ${analysis.waterStatus.toLowerCase()}.`
+          : "A simple score that reflects overall water conditions in your area.",
       icon: Droplets,
       bg: "bg-sky-100",
       iconColor: "text-sky-800",
     },
     {
-      title: "Forecast",
-      description:
-        "See how snowpack, precipitation, and reservoirs affect future water supply.",
+      title: "Flood Risk",
+      description: analysis
+        ? `Current flood risk level: ${analysis.floodRisk}.`
+        : "See how snowpack, precipitation, and reservoirs affect future water supply.",
       icon: CloudRain,
       bg: "bg-teal-100",
       iconColor: "text-sky-800",
     },
     {
-      title: "Year Comparison",
-      description:
-        "Compare current conditions to past years and historical patterns.",
+      title: "Drought Risk",
+      description: analysis
+        ? `Current drought risk level: ${analysis.droughtRisk}.`
+        : "Compare current conditions to past years and historical patterns.",
       icon: Mountain,
       bg: "bg-green-100",
       iconColor: "text-slate-700",
     },
     {
       title: "Action Tips",
-      description:
-        "Practical steps you can take to conserve and protect our water.",
+      description: analysis
+        ? `Recommended action: ${analysis.recommendation}.`
+        : "Practical steps you can take to conserve and protect our water.",
       icon: Leaf,
       bg: "bg-orange-100",
       iconColor: "text-amber-700",
@@ -64,7 +109,7 @@ export default function HomePage() {
           </Link>
 
           <div className="hidden items-center gap-10 font-semibold text-slate-600 md:flex">
-            <Link href="/dashboard" className="hover:text-sky-700">
+            <Link href="/Dashboard" className="hover:text-sky-700">
               Dashboard
             </Link>
             <Link href="/insights" className="hover:text-sky-700">
@@ -107,7 +152,7 @@ export default function HomePage() {
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Link
-                href="/dashboard"
+                href="/Dashboard"
                 className="rounded-xl bg-sky-800 px-7 py-4 text-center font-bold text-white shadow-lg transition hover:bg-sky-900"
               >
                 View Dashboard
@@ -123,7 +168,7 @@ export default function HomePage() {
           </div>
 
           <Link
-            href="/dashboard"
+            href="/Dashboard"
             className="group block rounded-2xl bg-white p-4 shadow-2xl ring-1 ring-slate-200 transition hover:-translate-y-1"
           >
             <div className="rounded-2xl bg-slate-50 p-5">
@@ -138,13 +183,27 @@ export default function HomePage() {
                 </span>
               </div>
 
-              <div className="rounded-2xl bg-emerald-600 px-6 py-8 text-center text-white shadow-lg">
-                <CheckCircle className="mx-auto mb-4" size={56} strokeWidth={2.5} />
-                <p className="text-4xl font-black tracking-[0.2em]">SAFE</p>
-                <p className="mt-2 text-xl font-bold">Current Water Status</p>
-                <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-emerald-50">
-                  Reservoir levels are strong and current water conditions are
-                  favorable.
+              <div
+                className={`rounded-2xl px-6 py-8 text-center text-white shadow-lg ${getPreviewColor(
+                  previewStatus
+                )}`}
+              >
+                <PreviewIcon
+                  className="mx-auto mb-4"
+                  size={56}
+                  strokeWidth={2.5}
+                />
+
+                <p className="text-4xl font-black tracking-[0.2em]">
+                  {previewStatus}
+                </p>
+
+                <p className="mt-2 text-xl font-bold">
+                  Water Score: {previewScore}
+                </p>
+
+                <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-white/90">
+                  {previewText}
                 </p>
               </div>
 
@@ -152,20 +211,22 @@ export default function HomePage() {
                 <MiniStatCard
                   icon={<Snowflake size={28} />}
                   title="Snowpack"
-                  value="110%"
-                  label="Above Average"
+                  value={snowpack}
+                  label="Current Level"
                 />
+
                 <MiniStatCard
                   icon={<Waves size={28} />}
                   title="Reservoirs"
-                  value="85%"
-                  label="Capacity Reached"
+                  value={reservoirs}
+                  label="Current Storage"
                 />
+
                 <MiniStatCard
                   icon={<CloudRain size={28} />}
-                  title="Rainfall"
-                  value='4.2"'
-                  label="Past 30 Days"
+                  title="Precipitation"
+                  value={precipitation}
+                  label="Current Level"
                 />
               </div>
 

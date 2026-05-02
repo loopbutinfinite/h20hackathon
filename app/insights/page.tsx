@@ -7,28 +7,80 @@ import {
   UserCircle,
   Waves,
 } from "lucide-react";
+import { getWaterAnalysis } from "@/lib/WaterService";
 
-export default function InsightsPage() {
+function getIndicatorStatus(value: number) {
+  if (value >= 120) return "Very High";
+  if (value >= 100) return "Above Normal";
+  if (value >= 90) return "Near Normal";
+  if (value >= 70) return "Below Normal";
+  return "Very Low";
+}
+
+function getStatusStyle(status: string) {
+  if (status === "Very High") {
+    return "bg-blue-100 text-blue-700";
+  }
+
+  if (status === "Above Normal" || status === "Near Normal") {
+    return "bg-green-100 text-green-700";
+  }
+
+  if (status === "Below Normal") {
+    return "bg-amber-100 text-amber-700";
+  }
+
+  return "bg-red-100 text-red-700";
+}
+
+export default async function InsightsPage() {
+  const analysis = await getWaterAnalysis();
+
+  if (!analysis) {
+    return (
+      <main className="min-h-screen bg-[#faf8f2] text-slate-900">
+        <section className="mx-auto max-w-7xl px-5 py-20 text-center lg:px-8">
+          <h1 className="text-4xl font-black tracking-tight text-slate-950">
+            Water Insights
+          </h1>
+
+          <p className="mt-4 text-lg text-slate-600">
+            Water data could not be loaded right now. Please try again later.
+          </p>
+        </section>
+      </main>
+    );
+  }
+
   const insights = [
     {
       title: "Snowpack",
-      value: "110%",
-      status: "Above Normal",
-      text: "Snowpack acts like a natural reservoir and helps refill streams and reservoirs as it melts.",
+      value: `${analysis.latest.snowpack}%`,
+      status: getIndicatorStatus(analysis.latest.snowpack),
+      text:
+        analysis.latest.snowpack >= 100
+          ? "Snowpack is helping support future streamflow and reservoir refill as it melts."
+          : "Snowpack is below normal, which may reduce future runoff into rivers and reservoirs.",
       icon: Snowflake,
     },
     {
       title: "Precipitation",
-      value: "105%",
-      status: "Slightly Above Average",
-      text: "Precipitation supports soil moisture, streamflow, and reservoir recovery throughout the water year.",
+      value: `${analysis.latest.precip}%`,
+      status: getIndicatorStatus(analysis.latest.precip),
+      text:
+        analysis.latest.precip >= 100
+          ? "Precipitation is supporting soil moisture, streamflow, and water supply recovery."
+          : "Precipitation is below normal, which can increase drought pressure if the pattern continues.",
       icon: CloudRain,
     },
     {
       title: "Reservoirs",
-      value: "90%",
-      status: "Strong Capacity",
-      text: "Reservoirs store water for homes, farms, ecosystems, and future dry months.",
+      value: `${analysis.latest.reservoir}%`,
+      status: getIndicatorStatus(analysis.latest.reservoir),
+      text:
+        analysis.latest.reservoir >= 85
+          ? "Reservoir storage is strong and helps support homes, farms, ecosystems, and dry months."
+          : "Reservoir storage is lower than ideal, so stored water should be watched closely.",
       icon: Waves,
     },
   ];
@@ -51,15 +103,18 @@ export default function InsightsPage() {
             <Link href="/dashboard" className="hover:text-sky-700">
               Dashboard
             </Link>
+
             <Link
               href="/insights"
               className="border-b-2 border-sky-600 pb-2 text-slate-900"
             >
               Insights
             </Link>
+
             <Link href="/recommendations" className="hover:text-sky-700">
               Recommendations
             </Link>
+
             <Link href="/about" className="hover:text-sky-700">
               About
             </Link>
@@ -109,7 +164,11 @@ export default function InsightsPage() {
                   {item.value}
                 </p>
 
-                <span className="mt-4 inline-flex rounded-full bg-green-100 px-4 py-2 text-sm font-black text-green-700">
+                <span
+                  className={`mt-4 inline-flex rounded-full px-4 py-2 text-sm font-black ${getStatusStyle(
+                    item.status
+                  )}`}
+                >
                   {item.status}
                 </span>
 
@@ -119,18 +178,43 @@ export default function InsightsPage() {
           })}
         </div>
 
-        <div className="mt-10 rounded-2xl bg-white p-8 shadow-sm border border-slate-200">
+        <div className="mt-10 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
           <h2 className="text-2xl font-black text-slate-950">
             What this means
           </h2>
 
           <p className="mt-4 max-w-4xl text-lg leading-8 text-slate-700">
-            Snowpack, precipitation, and reservoir levels work together.
-            A strong snowpack can support reservoirs later in the year, while
-            low precipitation or low storage can increase drought risk. Water
-            Watch turns these numbers into a clear status so communities know
-            when to conserve.
+            {analysis.explanation}
           </p>
+
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
+            <div className="rounded-xl bg-slate-100 p-5">
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-slate-500">
+                Water Score
+              </p>
+              <p className="mt-2 text-3xl font-black text-sky-700">
+                {analysis.waterScore}
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-slate-100 p-5">
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-slate-500">
+                Drought Risk
+              </p>
+              <p className="mt-2 text-3xl font-black text-sky-700">
+                {analysis.droughtRisk}
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-slate-100 p-5">
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-slate-500">
+                Flood Risk
+              </p>
+              <p className="mt-2 text-3xl font-black text-sky-700">
+                {analysis.floodRisk}
+              </p>
+            </div>
+          </div>
         </div>
       </section>
     </main>

@@ -10,56 +10,105 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
+import { getWaterAnalysis } from "@/lib/WaterService";
 
-export default function DashboardPage() {
+function getStatusColor(status: string) {
+  if (status === "Very Healthy" || status === "Healthy") {
+    return "bg-emerald-600 text-white";
+  }
+
+  if (status === "Watch") {
+    return "bg-amber-500 text-white";
+  }
+
+  if (status === "Drought Risk") {
+    return "bg-orange-600 text-white";
+  }
+
+  return "bg-red-700 text-white";
+}
+
+function getMainIcon(status: string) {
+  if (status === "Very Healthy" || status === "Healthy") {
+    return CheckCircle;
+  }
+
+  return AlertTriangle;
+}
+
+function getRiskType(risk: string) {
+  return risk === "Low" ? "clear" : "watch";
+}
+
+export default async function DashboardPage() {
+  const analysis = await getWaterAnalysis();
+
+  if (!analysis) {
+    return (
+      <main className="min-h-screen bg-slate-50 text-blue-950">
+        <div className="mx-auto max-w-7xl px-5 py-20 text-center">
+          <h1 className="text-4xl font-black">Water data unavailable</h1>
+          <p className="mt-4 text-slate-600">
+            We could not load the current water data. Please try again later.
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  const MainIcon = getMainIcon(analysis.waterStatus);
+
   const supplyCards = [
     {
       title: "Snowpack",
-      value: "110%",
-      label: "Above Average",
+      value: `${analysis.latest.snowpack}%`,
+      label: "Current snowpack level",
       icon: Snowflake,
-      progress: "",
     },
     {
       title: "Reservoirs",
-      value: "85%",
-      label: "Capacity Reached",
+      value: `${analysis.latest.reservoir}%`,
+      label: "Current reservoir storage",
       icon: Waves,
-      progress: "",
     },
     {
-      title: "Recent Rainfall",
-      value: '4.2"',
-      label: "Past 30 Days",
+      title: "Precipitation",
+      value: `${analysis.latest.precip}%`,
+      label: "Current precipitation level",
       icon: CloudRain,
-      progress: "w-[82%]",
     },
   ];
 
   const alerts = [
     {
-      region: "Outdoor Watering",
-      allocation: "Reduce irrigation during hot afternoons.",
-      status: "Watch",
-      type: "watch",
+      region: "Drought Risk",
+      allocation:
+        analysis.droughtRisk === "Low"
+          ? "Drought risk is currently low."
+          : "Some water indicators are below normal and should be watched.",
+      status: analysis.droughtRisk,
+      type: getRiskType(analysis.droughtRisk),
     },
     {
-      region: "Leak Prevention",
-      allocation: "Check faucets, toilets, and sprinklers.",
-      status: "Clear",
+      region: "Flood Risk",
+      allocation:
+        analysis.floodRisk === "Low"
+          ? "Flood risk is currently low."
+          : "High snowpack or precipitation may increase flood concerns.",
+      status: analysis.floodRisk,
+      type: getRiskType(analysis.floodRisk),
+    },
+    {
+      region: "Recommendation",
+      allocation: analysis.recommendation,
+      status: "Action",
+      type: analysis.recommendation === "Normal Use" ? "clear" : "watch",
+    },
+    {
+      region: "Latest Data",
+      allocation: `Last updated from data point: ${analysis.latest.date}`,
+      status: "Live",
       type: "clear",
-    },
-    {
-      region: "Reservoir Monitoring",
-      allocation: "Storage is strong but should still be monitored.",
-      status: "Clear",
-      type: "clear",
-    },
-    {
-      region: "Summer Readiness",
-      allocation: "Prepare for warmer, drier months.",
-      status: "Watch",
-      type: "watch",
     },
   ];
 
@@ -73,7 +122,7 @@ export default function DashboardPage() {
           </Link>
 
           <div className="hidden items-center gap-8 font-semibold text-slate-600 md:flex">
-            <Link href="/dashboard" className="text-sky-700">
+            <Link href="/Dashboard" className="text-sky-700">
               Dashboard
             </Link>
             <Link href="/insights" className="hover:text-sky-700">
@@ -96,16 +145,23 @@ export default function DashboardPage() {
       </header>
 
       <div className="mx-auto max-w-7xl px-5 py-8 lg:px-8">
-        <section className="rounded-2xl bg-emerald-600 px-6 py-10 text-center text-white shadow-xl md:py-12">
-          <CheckCircle className="mx-auto mb-5" size={72} strokeWidth={2.5} />
+        <section
+          className={`rounded-2xl px-6 py-10 text-center shadow-xl md:py-12 ${getStatusColor(
+            analysis.waterStatus
+          )}`}
+        >
+          <MainIcon className="mx-auto mb-5" size={72} strokeWidth={2.5} />
 
-          <h1 className="text-5xl font-black tracking-[0.25em]">SAFE</h1>
+          <h1 className="text-5xl font-black tracking-[0.25em]">
+            {analysis.waterStatus}
+          </h1>
 
-          <p className="mt-4 text-2xl font-bold">Current Water Status</p>
+          <p className="mt-4 text-2xl font-bold">
+            Water Score: {analysis.waterScore}
+          </p>
 
-          <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-emerald-50">
-            Reservoir levels are strong and current water conditions are
-            favorable. Conservation is still encouraged to protect future supply.
+          <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-white/90">
+            {analysis.explanation}
           </p>
         </section>
 
@@ -125,23 +181,9 @@ export default function DashboardPage() {
 
                   <h3 className="mt-5 text-2xl font-black">{card.title}</h3>
 
-                  {card.progress ? (
-                    <>
-                      <p className="mt-6 text-5xl font-black text-sky-700">
-                        {card.value}
-                      </p>
-
-                      <div className="mx-auto mt-4 h-3 max-w-xs rounded-full bg-slate-300">
-                        <div
-                          className={`${card.progress} h-3 rounded-full bg-sky-700`}
-                        />
-                      </div>
-                    </>
-                  ) : (
-                    <div className="mx-auto mt-6 flex h-32 w-32 items-center justify-center rounded-full border-[10px] border-sky-700 text-3xl font-black">
-                      {card.value}
-                    </div>
-                  )}
+                  <div className="mx-auto mt-6 flex h-32 w-32 items-center justify-center rounded-full border-[10px] border-sky-700 text-3xl font-black">
+                    {card.value}
+                  </div>
 
                   <p className="mt-5 text-slate-600">{card.label}</p>
                 </article>

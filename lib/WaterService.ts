@@ -12,13 +12,29 @@ export interface WaterData {
   reservoir: number;
 }
 
+export type RiskLevel = "Low" | "Watch" | "Moderate" | "High";
+
+export type WaterStatus =
+  | "Very Healthy"
+  | "Healthy"
+  | "Watch"
+  | "Drought Risk"
+  | "Severe Drought Risk";
+
+export type WaterRecommendation =
+  | "Normal Use"
+  | "Normal Use, Avoid Waste"
+  | "Reduce Outdoor Watering"
+  | "Conserve Water"
+  | "Flood Watch";
+
 export interface WaterAnalysis {
   latest: WaterData;
   waterScore: number;
-  waterStatus: string;
-  droughtRisk: string;
-  floodRisk: string;
-  recommendation: string;
+  waterStatus: WaterStatus;
+  droughtRisk: RiskLevel;
+  floodRisk: RiskLevel;
+  recommendation: WaterRecommendation;
   explanation: string;
 }
 
@@ -79,7 +95,7 @@ export function getWaterScore(data: WaterData): number {
   return Math.round(score);
 }
 
-export function getWaterStatus(score: number): string {
+export function getWaterStatus(score: number): WaterStatus {
   if (score >= 90) return "Very Healthy";
   if (score >= 75) return "Healthy";
   if (score >= 60) return "Watch";
@@ -88,27 +104,35 @@ export function getWaterStatus(score: number): string {
   return "Severe Drought Risk";
 }
 
-export function getDroughtRisk(data: WaterData): string {
-  if (
-    data.snowpack < 60 &&
-    data.precip < 70 &&
-    data.reservoir < 65
-  ) {
+export function getDroughtRisk(data: WaterData): RiskLevel {
+  const concerningSnowpack = data.snowpack < 70;
+  const droughtSignalPrecip = data.precip < 70;
+  const concernReservoir = data.reservoir < 50;
+
+  const belowAvgSnowpack = data.snowpack < 90;
+  const dryPrecip = data.precip < 90;
+  const watchReservoir = data.reservoir < 70;
+
+  if (concerningSnowpack && droughtSignalPrecip && concernReservoir) {
     return "High";
   }
 
   if (
-    data.snowpack < 75 ||
-    data.precip < 80 ||
-    data.reservoir < 70
+    (concerningSnowpack && dryPrecip) ||
+    (concerningSnowpack && watchReservoir) ||
+    (droughtSignalPrecip && watchReservoir)
   ) {
     return "Moderate";
+  }
+
+  if (concerningSnowpack || belowAvgSnowpack || dryPrecip || watchReservoir) {
+    return "Watch";
   }
 
   return "Low";
 }
 
-export function getFloodRisk(data: WaterData): string {
+export function getFloodRisk(data: WaterData): RiskLevel {
   if (
     data.snowpack >= 130 &&
     data.precip >= 120 &&
@@ -118,17 +142,21 @@ export function getFloodRisk(data: WaterData): string {
   }
 
   if (
-    data.snowpack >= 110 &&
+    data.snowpack >= 120 &&
     data.precip >= 110 &&
     data.reservoir >= 85
   ) {
     return "Moderate";
   }
 
+  if (data.snowpack >= 110 && data.precip >= 110) {
+    return "Watch";
+  }
+
   return "Low";
 }
 
-export function getWaterRecommendation(data: WaterData): string {
+export function getWaterRecommendation(data: WaterData): WaterRecommendation {
   const droughtRisk = getDroughtRisk(data);
   const floodRisk = getFloodRisk(data);
 
@@ -144,6 +172,10 @@ export function getWaterRecommendation(data: WaterData): string {
     return "Reduce Outdoor Watering";
   }
 
+  if (droughtRisk === "Watch" || floodRisk === "Watch") {
+    return "Normal Use, Avoid Waste";
+  }
+
   return "Normal Use";
 }
 
@@ -152,19 +184,27 @@ export function getExplanation(data: WaterData): string {
   const floodRisk = getFloodRisk(data);
 
   if (floodRisk === "High") {
-    return "Snowpack, precipitation, and reservoir storage are all very high. This means California has strong water supply, but flood risk may rise if storms continue or snow melts too quickly.";
+    return "Snowpack, precipitation, and reservoir storage are all very high. Water supply is strong, but flood risk may rise if storms continue or snow melts too quickly.";
   }
 
   if (floodRisk === "Moderate") {
-    return "Water supply is strong. Snowpack and precipitation are high, so flood risk should be watched if more storms arrive or temperatures rise quickly.";
+    return "Snowpack, precipitation, and reservoirs are elevated. Water supply looks strong, but conditions should be watched because additional storms or fast snowmelt could raise flood risk.";
+  }
+
+  if (floodRisk === "Watch") {
+    return "Snowpack and precipitation are high, which is good for water supply. Flood risk is not severe right now, but conditions should be watched if reservoirs continue rising.";
   }
 
   if (droughtRisk === "High") {
-    return "Snowpack, precipitation, and reservoir storage are all low. This means future water supply may be limited, so users should conserve water.";
+    return "Snowpack, precipitation, and reservoir storage are all very low. Future water supply may be limited, so users should conserve water and prepare for possible restrictions.";
   }
 
   if (droughtRisk === "Moderate") {
-    return "One or more water indicators are below normal. Conditions are not severe yet, but users should reduce unnecessary water use.";
+    return "Multiple water indicators are below normal. Conditions are not severe yet, but drought risk is increasing, so users should reduce unnecessary outdoor water use.";
+  }
+
+  if (droughtRisk === "Watch") {
+    return "At least one water indicator is below normal. Conditions are not critical, but users should avoid wasting water and continue watching future updates.";
   }
 
   return "Water conditions look stable. Snowpack, precipitation, and reservoirs are supporting a healthy water supply.";
