@@ -5,6 +5,8 @@ import Link from "next/link";
 import {
   ChevronDown,
   CloudRain,
+  Droplet,
+  Droplets,
   Mountain,
   Snowflake,
   Waves,
@@ -139,28 +141,28 @@ export default function InsightsPage() {
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
           <Link href="/" className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-full bg-sky-100 text-sky-800">
-              <Mountain size={26} />
+              <Droplets size={26} />
             </div>
 
             <span className="text-xl font-black tracking-wide text-slate-900">
-              WATER WATCH
+              WATER WISE
             </span>
           </Link>
 
           <div className="hidden items-center gap-10 font-semibold text-slate-600 md:flex">
+
             <Link
-              href="/insights"
-              className="border-b-2 border-sky-600 pb-2 text-slate-900"
+              href="/"
+              className="hover:text-sky-700"
             >
+              Home
+            </Link>
+            <Link href="/Insights" className="border-b-2 border-sky-600 pb-2 text-slate-900">
               Insights
             </Link>
 
-            <Link href="/recommendations" className="hover:text-sky-700">
+            <Link href="/Recommendations" className="hover:text-sky-700">
               Recommendations
-            </Link>
-
-            <Link href="/about" className="hover:text-sky-700">
-              About
             </Link>
           </div>
         </nav>
