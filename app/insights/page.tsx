@@ -82,7 +82,7 @@ export default function InsightsPage() {
   }, []);
 
   const handleDataPointChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
+    event: React.ChangeEvent<HTMLSelectElement>,
   ) => {
     const index = Number(event.target.value);
     const selectedDataPoint = waterData[index];
@@ -110,9 +110,7 @@ export default function InsightsPage() {
     {
       title: "Precipitation",
       value: analysis ? `${analysis.latest.precip}%` : "--",
-      status: analysis
-        ? getIndicatorStatus(analysis.latest.precip)
-        : "Loading",
+      status: analysis ? getIndicatorStatus(analysis.latest.precip) : "Loading",
       text: analysis
         ? analysis.latest.precip >= 100
           ? "Precipitation is supporting soil moisture, streamflow, and water supply recovery."
@@ -251,7 +249,7 @@ export default function InsightsPage() {
 
                 <span
                   className={`mt-4 inline-flex rounded-full px-4 py-2 text-sm font-black ${getStatusStyle(
-                    item.status
+                    item.status,
                   )}`}
                 >
                   {item.status}
