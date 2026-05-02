@@ -153,7 +153,7 @@ export default function RecommendationsPage() {
             </div>
 
             <span className="text-xl font-black tracking-wide text-slate-900">
-              Water Wise
+              WATER WISE
             </span>
           </Link>
 
