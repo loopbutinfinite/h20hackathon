@@ -57,10 +57,9 @@ export default async function HomePage() {
   const highlights = [
     {
       title: "Water Score",
-      description:
-        analysis
-          ? `The current water score is ${analysis.waterScore}, which means conditions are ${analysis.waterStatus.toLowerCase()}.`
-          : "A simple score that reflects overall water conditions in your area.",
+      description: analysis
+        ? `The current water score is ${analysis.waterScore}, which means conditions are ${analysis.waterStatus.toLowerCase()}.`
+        : "A simple score that reflects overall water conditions in your area.",
       icon: Droplets,
       bg: "bg-sky-100",
       iconColor: "text-sky-800",
@@ -109,30 +108,19 @@ export default async function HomePage() {
           </Link>
 
           <div className="hidden items-center gap-10 font-semibold text-slate-600 md:flex">
-            <Link href="/Dashboard" className="hover:text-sky-700">
-              Dashboard
-            </Link>
             <Link href="/insights" className="hover:text-sky-700">
               Insights
             </Link>
+
             <Link href="/recommendations" className="hover:text-sky-700">
               Recommendations
             </Link>
+
             <Link href="/about" className="hover:text-sky-700">
               About
             </Link>
           </div>
 
-          <div className="flex items-center gap-4">
-            <button className="hidden items-center gap-3 rounded-xl border border-slate-300 bg-white px-4 py-3 font-semibold text-slate-600 shadow-sm sm:flex">
-              California
-              <ChevronDown size={18} />
-            </button>
-
-            <button className="rounded-full bg-slate-900 p-2 text-white">
-              <UserCircle size={28} />
-            </button>
-          </div>
         </nav>
       </header>
 
@@ -152,10 +140,10 @@ export default async function HomePage() {
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Link
-                href="/Dashboard"
+                href="/insights"
                 className="rounded-xl bg-sky-800 px-7 py-4 text-center font-bold text-white shadow-lg transition hover:bg-sky-900"
               >
-                View Dashboard
+                View Insights
               </Link>
 
               <Link
@@ -168,7 +156,7 @@ export default async function HomePage() {
           </div>
 
           <Link
-            href="/Dashboard"
+            href="/insights"
             className="group block rounded-2xl bg-white p-4 shadow-2xl ring-1 ring-slate-200 transition hover:-translate-y-1"
           >
             <div className="rounded-2xl bg-slate-50 p-5">
@@ -231,7 +219,7 @@ export default async function HomePage() {
               </div>
 
               <div className="mt-5 flex items-center justify-center gap-2 font-bold text-sky-800">
-                View full dashboard
+                View full insights
                 <ArrowRight
                   size={18}
                   className="transition group-hover:translate-x-1"

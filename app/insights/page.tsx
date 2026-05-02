@@ -7,7 +7,6 @@ import {
   CloudRain,
   Mountain,
   Snowflake,
-  UserCircle,
   Waves,
 } from "lucide-react";
 import {
@@ -38,6 +37,10 @@ function getStatusStyle(status: string) {
     return "bg-amber-100 text-amber-700";
   }
 
+  if (status === "Loading") {
+    return "bg-slate-100 text-slate-500";
+  }
+
   return "bg-red-100 text-red-700";
 }
 
@@ -45,9 +48,16 @@ export default function InsightsPage() {
   const [waterData, setWaterData] = useState<WaterData[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [analysis, setAnalysis] = useState<WaterAnalysis | null>(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let loaded = false;
+
+    const refreshTimer = setTimeout(() => {
+      if (!loaded) {
+        window.location.reload();
+      }
+    }, 5000);
+
     async function loadWaterData() {
       const data = await getWaterData();
 
@@ -58,12 +68,17 @@ export default function InsightsPage() {
 
         setSelectedIndex(latestIndex);
         setAnalysis(analyzeWaterPoint(data[latestIndex]));
-      }
 
-      setLoading(false);
+        loaded = true;
+        clearTimeout(refreshTimer);
+      }
     }
 
     loadWaterData();
+
+    return () => {
+      clearTimeout(refreshTimer);
+    };
   }, []);
 
   const handleDataPointChange = (
@@ -72,67 +87,50 @@ export default function InsightsPage() {
     const index = Number(event.target.value);
     const selectedDataPoint = waterData[index];
 
+    if (!selectedDataPoint) return;
+
     setSelectedIndex(index);
     setAnalysis(analyzeWaterPoint(selectedDataPoint));
   };
 
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-[#faf8f2] text-slate-900">
-        <section className="mx-auto max-w-7xl px-5 py-20 text-center lg:px-8">
-          <h1 className="text-4xl font-black tracking-tight text-slate-950">
-            Loading Water Insights...
-          </h1>
-        </section>
-      </main>
-    );
-  }
-
-  if (!analysis) {
-    return (
-      <main className="min-h-screen bg-[#faf8f2] text-slate-900">
-        <section className="mx-auto max-w-7xl px-5 py-20 text-center lg:px-8">
-          <h1 className="text-4xl font-black tracking-tight text-slate-950">
-            Water Insights
-          </h1>
-
-          <p className="mt-4 text-lg text-slate-600">
-            Water data could not be loaded right now. Please try again later.
-          </p>
-        </section>
-      </main>
-    );
-  }
-
   const insights = [
     {
       title: "Snowpack",
-      value: `${analysis.latest.snowpack}%`,
-      status: getIndicatorStatus(analysis.latest.snowpack),
-      text:
-        analysis.latest.snowpack >= 100
+      value: analysis ? `${analysis.latest.snowpack}%` : "--",
+      status: analysis
+        ? getIndicatorStatus(analysis.latest.snowpack)
+        : "Loading",
+      text: analysis
+        ? analysis.latest.snowpack >= 100
           ? "Snowpack is helping support future streamflow and reservoir refill as it melts."
-          : "Snowpack is below normal, which may reduce future runoff into rivers and reservoirs.",
+          : "Snowpack is below normal, which may reduce future runoff into rivers and reservoirs."
+        : "Water data is loading.",
       icon: Snowflake,
     },
     {
       title: "Precipitation",
-      value: `${analysis.latest.precip}%`,
-      status: getIndicatorStatus(analysis.latest.precip),
-      text:
-        analysis.latest.precip >= 100
+      value: analysis ? `${analysis.latest.precip}%` : "--",
+      status: analysis
+        ? getIndicatorStatus(analysis.latest.precip)
+        : "Loading",
+      text: analysis
+        ? analysis.latest.precip >= 100
           ? "Precipitation is supporting soil moisture, streamflow, and water supply recovery."
-          : "Precipitation is below normal, which can increase drought pressure if the pattern continues.",
+          : "Precipitation is below normal, which can increase drought pressure if the pattern continues."
+        : "Water data is loading.",
       icon: CloudRain,
     },
     {
       title: "Reservoirs",
-      value: `${analysis.latest.reservoir}%`,
-      status: getIndicatorStatus(analysis.latest.reservoir),
-      text:
-        analysis.latest.reservoir >= 85
+      value: analysis ? `${analysis.latest.reservoir}%` : "--",
+      status: analysis
+        ? getIndicatorStatus(analysis.latest.reservoir)
+        : "Loading",
+      text: analysis
+        ? analysis.latest.reservoir >= 85
           ? "Reservoir storage is strong and helps support homes, farms, ecosystems, and dry months."
-          : "Reservoir storage is lower than ideal, so stored water should be watched closely.",
+          : "Reservoir storage is lower than ideal, so stored water should be watched closely."
+        : "Water data is loading.",
       icon: Waves,
     },
   ];
@@ -152,10 +150,6 @@ export default function InsightsPage() {
           </Link>
 
           <div className="hidden items-center gap-10 font-semibold text-slate-600 md:flex">
-            <Link href="/Dashboard" className="hover:text-sky-700">
-              Dashboard
-            </Link>
-
             <Link
               href="/insights"
               className="border-b-2 border-sky-600 pb-2 text-slate-900"
@@ -171,36 +165,11 @@ export default function InsightsPage() {
               About
             </Link>
           </div>
-
-          <div className="flex items-center gap-4">
-            <div className="relative hidden sm:block">
-              <select
-                value={selectedIndex}
-                onChange={handleDataPointChange}
-                className="appearance-none rounded-xl border border-slate-300 bg-white px-4 py-3 pr-10 font-semibold text-slate-600 shadow-sm outline-none focus:border-sky-600"
-              >
-                {waterData.map((item, index) => (
-                  <option key={`${item.date}-${index}`} value={index}>
-                    {item.date}
-                  </option>
-                ))}
-              </select>
-
-              <ChevronDown
-                size={18}
-                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
-              />
-            </div>
-
-            <button className="rounded-full bg-slate-900 p-2 text-white">
-              <UserCircle size={28} />
-            </button>
-          </div>
         </nav>
       </header>
 
       <section className="mx-auto max-w-7xl px-5 py-10 lg:px-8">
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
             <h1 className="text-4xl font-black tracking-tight text-slate-950">
               Water Insights
@@ -212,22 +181,34 @@ export default function InsightsPage() {
             </p>
           </div>
 
-          <div className="sm:hidden">
+          <div className="w-full md:max-w-xs">
             <label className="mb-2 block text-sm font-black uppercase tracking-[0.2em] text-slate-500">
               Data Point
             </label>
 
-            <select
-              value={selectedIndex}
-              onChange={handleDataPointChange}
-              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 font-semibold text-slate-600 shadow-sm outline-none focus:border-sky-600"
-            >
-              {waterData.map((item, index) => (
-                <option key={`${item.date}-${index}`} value={index}>
-                  {item.date}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                value={selectedIndex}
+                onChange={handleDataPointChange}
+                disabled={waterData.length === 0}
+                className="w-full appearance-none rounded-xl border border-slate-300 bg-white px-4 py-3 pr-10 font-semibold text-slate-600 shadow-sm outline-none focus:border-sky-600 disabled:cursor-default"
+              >
+                {waterData.length > 0 ? (
+                  waterData.map((item, index) => (
+                    <option key={`${item.date}-${index}`} value={index}>
+                      {item.date}
+                    </option>
+                  ))
+                ) : (
+                  <option value={0}>--</option>
+                )}
+              </select>
+
+              <ChevronDown
+                size={18}
+                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
+              />
+            </div>
           </div>
         </div>
 
@@ -237,8 +218,14 @@ export default function InsightsPage() {
           </p>
 
           <p className="mt-2 text-2xl font-black text-sky-700">
-            {analysis.latest.date}
+            {analysis ? analysis.latest.date : "--"}
           </p>
+
+          {!analysis && (
+            <p className="mt-3 text-sm font-semibold text-slate-500">
+              Loading water data...
+            </p>
+          )}
         </div>
 
         <div className="mt-8 grid gap-6 md:grid-cols-3">
@@ -282,7 +269,9 @@ export default function InsightsPage() {
           </h2>
 
           <p className="mt-4 max-w-4xl text-lg leading-8 text-slate-700">
-            {analysis.explanation}
+            {analysis
+              ? analysis.explanation
+              : "Water data is loading. If it takes too long, the page will refresh automatically."}
           </p>
 
           <div className="mt-6 grid gap-4 md:grid-cols-4">
@@ -292,7 +281,7 @@ export default function InsightsPage() {
               </p>
 
               <p className="mt-2 text-3xl font-black text-sky-700">
-                {analysis.waterScore}
+                {analysis ? analysis.waterScore : "--"}
               </p>
             </div>
 
@@ -302,7 +291,7 @@ export default function InsightsPage() {
               </p>
 
               <p className="mt-2 text-3xl font-black text-sky-700">
-                {analysis.waterStatus}
+                {analysis ? analysis.waterStatus : "--"}
               </p>
             </div>
 
@@ -312,7 +301,7 @@ export default function InsightsPage() {
               </p>
 
               <p className="mt-2 text-3xl font-black text-sky-700">
-                {analysis.droughtRisk}
+                {analysis ? analysis.droughtRisk : "--"}
               </p>
             </div>
 
@@ -322,7 +311,7 @@ export default function InsightsPage() {
               </p>
 
               <p className="mt-2 text-3xl font-black text-sky-700">
-                {analysis.floodRisk}
+                {analysis ? analysis.floodRisk : "--"}
               </p>
             </div>
           </div>
