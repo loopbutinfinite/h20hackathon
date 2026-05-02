@@ -183,7 +183,7 @@ export default function InsightsPage() {
 
           <div className="w-full md:max-w-xs">
             <label className="mb-2 block text-sm font-black uppercase tracking-[0.2em] text-slate-500">
-              Data Point
+              Date
             </label>
 
             <div className="relative">
@@ -214,7 +214,7 @@ export default function InsightsPage() {
 
         <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <p className="text-sm font-black uppercase tracking-[0.2em] text-slate-500">
-            Viewing Data Point
+            Viewing Date
           </p>
 
           <p className="mt-2 text-2xl font-black text-sky-700">
